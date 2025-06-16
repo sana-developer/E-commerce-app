@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  avatarPublicId: {
+    type: String,
+    default: ''
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -49,9 +53,31 @@ const userSchema = new mongoose.Schema({
   orderHistory: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order'
-  }]
+  }],
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  lastLogin: {
+    type: Date
+  }
 }, {
   timestamps: true
 });
+
+// Virtual for avatar URL with optimizations
+userSchema.virtual('avatarUrl').get(function() {
+  if (!this.avatar) return '';
+  
+  // If it's a Cloudinary URL, return optimized version
+  if (this.avatar.includes('cloudinary.com')) {
+    return this.avatar.replace('/upload/', '/upload/w_150,h_150,c_fill,q_auto,f_auto/');
+  }
+  
+  return this.avatar;
+});
+
+// Ensure virtual fields are serialized
+userSchema.set('toJSON', { virtuals: true });
 
 export default mongoose.model('User', userSchema);

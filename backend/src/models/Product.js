@@ -1,103 +1,94 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  originalPrice: {
-    type: Number,
-    min: 0
-  },
-  discount: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 100
-  },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true
-  },
-  subcategory: {
-    type: String,
-    trim: true
-  },
-  brand: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  images: [{
-    url: String,
-    alt: String,
-    isPrimary: {
-      type: Boolean,
-      default: false
-    }
-  }],
-  specifications: [{
-    name: String,
-    value: String
-  }],
-  features: [String],
-  stock: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  sku: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  rating: {
-    average: {
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    sku: {
+      type: String,
+      unique: true,
+      required: true,
+      // Will be auto-generated if not provided
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    brand: {
+      type: String,
+      default: "",
+    },
+    stock: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        publicId: {
+          type: String,
+          required: true,
+        },
+        alt: {
+          type: String,
+          default: "",
+        },
+      },
+    ],
+    specifications: {
+      type: Map,
+      of: String,
+      default: {},
+    },
+    averageRating: {
       type: Number,
       default: 0,
       min: 0,
-      max: 5
+      max: 5,
     },
-    count: {
+    numReviews: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    tags: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
-  reviews: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Review'
-  }],
-  tags: [String],
-  isActive: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
   },
-  isFeatured: {
-    type: Boolean,
-    default: false
-  },
-  weight: Number,
-  dimensions: {
-    length: Number,
-    width: Number,
-    height: Number
-  }
-}, {
-  timestamps: true
-});
+)
 
-// Index for search functionality
-productSchema.index({ name: 'text', description: 'text', brand: 'text', tags: 'text' });
+// Index for better search performance
+productSchema.index({ name: "text", description: "text" })
+productSchema.index({ category: 1 })
+productSchema.index({ price: 1 })
+productSchema.index({ averageRating: -1 })
+productSchema.index({ createdAt: -1 })
 
-export default mongoose.model('Product', productSchema);
+export default mongoose.model("Product", productSchema)
