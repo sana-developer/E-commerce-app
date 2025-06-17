@@ -1,44 +1,47 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
-const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
+const categorySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    image: {
+      url: {
+        type: String,
+        default: "",
+      },
+      publicId: {
+        type: String,
+        default: "",
+      },
+      alt: {
+        type: String,
+        default: "",
+      },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    productCount: {
+      type: Number,
+      default: 0,
+    },
   },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
+  {
+    timestamps: true,
   },
-  description: {
-    type: String,
-    trim: true
-  },
-  image: {
-    type: String
-  },
-  parent: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    default: null
-  },
-  children: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category'
-  }],
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  sortOrder: {
-    type: Number,
-    default: 0
-  }
-}, {
-  timestamps: true
-});
+)
 
-export default mongoose.model('Category', categorySchema);
+// Index for better search performance
+categorySchema.index({ name: 1 })
+categorySchema.index({ isActive: 1 })
+
+export default mongoose.model("Category", categorySchema)

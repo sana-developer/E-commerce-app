@@ -83,4 +83,9 @@ export const ordersAPI = {
   getUserOrders: () => api.get("/orders/user"),
 }
 
+// Inquiry API
+export const inquiryAPI = {
+  submitInquiry: (inquiryData: any) => api.post("/inquiry", inquiryData),
+}
+
 export default api
